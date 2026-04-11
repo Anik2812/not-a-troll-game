@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEFINITELY NOT A TROLL GAME™</title>
+  <meta name="description" content="A completely normal platformer with absolutely no surprises whatsoever.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ SPLASH / LOADING ============ -->
+    <div id="splash" class="screen active">
+      <div class="splash-content">
+        <div class="studio-logo">
+          <div class="logo-icon">🎮</div>
+          <div class="studio-name">TROLLSOFT</div>
+          <div class="studio-suffix">ENTERTAINMENT™</div>
+        </div>
+        <p class="studio-tagline">Destroying Dreams Since 2026</p>
+        <div class="loading-container">
+          <div class="loading-bar"><div class="loading-fill" id="loading-fill"></div></div>
+          <p class="loading-text" id="loading-text">Initializing disappointment...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MAIN MENU ============ -->
+    <div id="menu" class="screen">
+      <div class="menu-particles" id="menu-particles"></div>
+      <div class="menu-content">
+        <div class="game-title">
+          <div class="title-pre">— WELCOME TO —</div>
+          <h1 id="main-title">DEFINITELY NOT<br><span class="accent">A TROLL GAME</span></h1>
+          <p class="tagline">A completely normal platformer with no surprises</p>
+        </div>
+        <div class="menu-buttons">
+          <button id="btn-play" class="menu-btn primary"><span class="btn-glow"></span><span class="btn-text">▶ PLAY</span></button>
+          <button id="btn-howto" class="menu-btn"><span class="btn-text">📖 HOW TO PLAY</span></button>
+          <button id="btn-settings" class="menu-btn"><span class="btn-text">⚙ SETTINGS</span></button>
+          <button id="btn-credits" class="menu-btn"><span class="btn-text">👤 CREDITS</span></button>
+        </div>
+        <div class="menu-stats">
+          <div class="stat"><span class="stat-value" id="fake-players">7,294,102</span><span class="stat-label">Players Online</span></div>
+          <div class="stat"><span class="stat-value">4.9 ★</span><span class="stat-label">Rating</span></div>
+          <div class="stat"><span class="stat-value">0</span><span class="stat-label">Bugs Found</span></div>
+        </div>
+        <div class="menu-reviews">
+          <p>"10/10 — Made me question reality" — <em>Totally Real Magazine</em></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TEAPOT 418 SCREEN ============ -->
+    <div id="teapot-screen" class="screen">
+      <div class="teapot-content">
+        <p>> ERR_KERNEL_PANIC: 0x00000418</p>
+        <p>> STATUS: I'M A TEAPOT</p>
+        <br>
+        <p>> DUMP_TRACE:</p>
+        <p>> The requested entity body is short and stout.</p>
+        <p>> Tip me over and pour me out.</p>
+        <br>
+        <p>> Please initiate subsystem reboot...</p>
+        <button id="btn-teapot-back" class="menu-btn primary"><span class="btn-text">[Y] REBOOT</span></button>
+      </div>
+    </div>
+
+    <!-- ============ GAME SCREEN ============ -->
+    <div id="game-screen" class="screen">
+      <div id="hud">
+        <div class="hud-left">
+          <div class="hud-health" id="hud-health"></div>
+          <div class="hud-score">SCORE <span id="hud-score">0</span></div>
+        </div>
+        <div class="hud-center">
+          <div class="hud-level" id="hud-level">LEVEL 1</div>
+          <div class="hud-deaths">DEATHS <span id="hud-deaths">0</span></div>
+        </div>
+        <div class="hud-right">
+          <div class="hud-fps" id="hud-fps">420.69 FPS</div>
+          <div class="hud-timer" id="hud-timer">00:00</div>
+          <button id="hud-pause-btn" class="hud-pause-btn" title="Pause / Exit (ESC)">☰</button>
+        </div>
+      </div>
+      <canvas id="game-canvas"></canvas>
+      
+      <!-- Mobile Controls -->
+      <div id="mobile-controls" class="mobile-controls">
+        <div class="dpad">
+          <button id="btn-left" class="touch-btn">←</button>
+          <button id="btn-right" class="touch-btn">→</button>
+        </div>
+        <div class="action-pad">
+          <button id="btn-jump" class="touch-btn">JUMP</button>
+        </div>
+      </div>
+
+      <!-- Death Overlay -->
+      <div id="death-overlay" class="game-overlay hidden">
+        <div class="death-content">
+          <div class="death-icon">💀</div>
+          <div class="death-message" id="death-message">SKILL ISSUE</div>
+          <p class="death-sub" id="death-sub">Press SPACE to accept your fate</p>
+          <p class="death-hint" id="death-hint"></p>
+        </div>
+      </div>
+
+      <!-- Level Intro -->
+      <div id="level-intro" class="game-overlay">
+        <div class="intro-content">
+          <div class="intro-label">LEVEL <span id="intro-num">1</span></div>
+          <h2 id="intro-name">WELCOME TO SAFETY</h2>
+          <p id="intro-sub">A perfectly normal tutorial level</p>
+          <p class="intro-hint">Press SPACE to begin</p>
+        </div>
+      </div>
+
+      <!-- Level Complete -->
+      <div id="level-complete" class="game-overlay hidden">
+        <div class="complete-content">
+          <div class="complete-icon">🎉</div>
+          <h2>LEVEL COMPLETE</h2>
+          <p id="complete-msg">That was... surprisingly normal.</p>
+          <p class="complete-hint">Press SPACE to continue</p>
+        </div>
+      </div>
+
+      <!-- Victory -->
+      <div id="victory-screen" class="game-overlay hidden">
+        <div class="victory-content">
+          <h2>🏆 YOU ACTUALLY WON 🏆</h2>
+          <p id="victory-msg"></p>
+          <div id="victory-stats"></div>
+          <button id="btn-menu" class="menu-btn primary"><span class="btn-text">Back to Menu</span></button>
+        </div>
+      </div>
+
+      <!-- Pause -->
+      <div id="pause-overlay" class="game-overlay hidden">
+        <div class="pause-content">
+          <h2>PAUSED</h2>
+          <p>The game misses you already.</p>
+          <p id="quit-troll-msg" class="quit-troll-msg" style="display:none;"></p>
+          <button id="btn-resume" class="menu-btn primary"><span class="btn-text">▶ Resume</span></button>
+          <button id="btn-quit" class="menu-btn"><span class="btn-text">🚪 Quit (coward)</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ FLOATING CHAT BUTTON ============ -->
+    <button id="chat-toggle" class="hidden" title="Ask for help">
+      <span class="chat-icon">?</span>
+      <span class="chat-pulse"></span>
+    </button>
+
+    <!-- ============ CHAT POPUP ============ -->
+    <div id="chat-popup" class="hidden">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="chat-avatar">🤖</div>
+          <div class="chat-header-info">
+            <div class="chat-name">HELPFUL ASSISTANT™</div>
+            <div class="chat-status"><span class="status-dot"></span> Powered by Gemini AI</div>
+          </div>
+        </div>
+        <button id="chat-close">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg bot"><p>Hello! I'm your <strong>Helpful Assistant™</strong>. Ask me anything about the game. I promise my advice is... <em>unforgettable</em>. 😊</p></div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Ask for help..." autocomplete="off" maxlength="200">
+        <button id="chat-send">➤</button>
+      </div>
+    </div>
+
+    <!-- ============ SETTINGS MODAL ============ -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content glass-panel">
+        <h2>⚙ Settings</h2>
+        <div class="setting-row"><label>Difficulty</label><select id="sel-diff"><option>Easy</option><option selected>Normal</option><option>Hard</option><option>Impossible (recommended)</option></select></div>
+        <div class="setting-row"><label>Music Volume</label><input type="range" min="0" max="100" value="50"></div>
+        <div class="setting-row"><label>Enable Fun</label><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="setting-row"><label>Graphics Quality</label><select><option>Potato</option><option>Toaster</option><option selected>Refrigerator</option><option>NASA Supercomputer</option></select></div>
+        <p class="setting-note">Note: No settings actually do anything.</p>
+        <button class="menu-btn modal-close"><span class="btn-text">Close (changes won't save)</span></button>
+      </div>
+    </div>
+
+    <!-- ============ HOW TO PLAY MODAL ============ -->
+    <div id="howto-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content glass-panel">
+        <h2>📖 How To Play</h2>
+        <div class="controls-grid">
+          <div class="control-item"><div class="keys"><kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd></div><span>Move</span></div>
+          <div class="control-item"><div class="keys"><kbd>W</kbd> or <kbd>SPACE</kbd></div><span>Jump</span></div>
+          <div class="control-item"><div class="keys"><kbd>ESC</kbd></div><span>Pause</span></div>
+        </div>
+        <div class="tips-box">
+          <h3>Pro Tips™</h3>
+          <ul>
+            <li>Collect all the coins! 💰</li>
+            <li>Avoid the spikes! ⚠️</li>
+            <li>Trust the signs! 📝</li>
+            <li>Everything is exactly as it seems! ✅</li>
+          </ul>
+        </div>
+        <button class="menu-btn modal-close"><span class="btn-text">Got it!</span></button>
+      </div>
+    </div>
+
+    <!-- ============ CREDITS MODAL ============ -->
+    <div id="credits-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content glass-panel">
+        <h2>👤 Credits</h2>
+        <p class="credits-line">Developed by: <strong>Someone who should know better</strong></p>
+        <p class="credits-line">Tested by: <strong>Absolutely nobody</strong></p>
+        <p class="credits-line">Bugs: <strong>Features™</strong></p>
+        <p class="credits-line">Moral support: <strong>A rubber duck</strong></p>
+        <p class="credits-line">Powered by: <strong>Spite and caffeine</strong></p>
+        <p class="credits-line teapot-credit">Special thanks: <strong>HTTP 418 — I'm a teapot 🫖</strong></p>
+        <button class="menu-btn modal-close"><span class="btn-text">Close</span></button>
+      </div>
+    </div>
+
+    <!-- ============ COOKIE BANNER ============ -->
+    <div id="cookie-banner">
+      <p>🍪 We use cookies to track your failures and share them with absolutely everyone.</p>
+      <button id="cookie-accept">I Accept My Fate</button>
+    </div>
+
+    <!-- ============ ACHIEVEMENT TOAST ============ -->
+    <div id="achievement" class="hidden">
+      <div class="achievement-glow"></div>
+      <div class="achievement-icon">🏆</div>
+      <div class="achievement-text">
+        <div class="achievement-label">ACHIEVEMENT UNLOCKED</div>
+        <div class="achievement-desc" id="achievement-desc">Opened the game</div>
+      </div>
+    </div>
+
+    <!-- ============ NOTIFICATION TOAST ============ -->
+    <div id="notification" class="hidden">
+      <span id="notif-text"></span>
+    </div>
+
+  </div>
+
+  <script src="levels.js"></script>
+  <script src="game.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
