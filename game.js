@@ -12,7 +12,7 @@ const COYOTE_TIME = 8;
 
 /* ---------- LEVELS loaded from levels.js ---------- */
 
-/* ---------- DEATH MESSAGES ---------- */
+/* ---------- DEATH MESSAGES (Non-repeating shuffle) ---------- */
 const DEATH_MESSAGES = [
   "SKILL ISSUE", "THAT WAS ON PURPOSE, RIGHT?", "GRAVITY WINS AGAIN",
   "YOU DIED. SHOCKING.", "SMOOTH MOVE", "404: SKILL NOT FOUND",
@@ -21,7 +21,24 @@ const DEATH_MESSAGES = [
   "THE SPIKES SAY HI", "EVEN THE PIXELS CRINGED",
   "YOU WALKED INTO THAT. LITERALLY.", "FUN FACT: CLOSING THE TAB IS FREE",
   "THE GAME ISN'T EVEN TRYING AND NEITHER ARE YOU",
+  "TASK FAILED SUCCESSFULLY", "PRESS F TO PAY RESPECTS",
+  "YOUR ANCESTORS ARE DISAPPOINTED", "THE VOID CALLED. IT WANTS YOU BACK.",
+  "RESPAWN SPONSORED BY YOUR BAD DECISIONS", "DEATH #∞: ETERNAL RETURN",
+  "THE AI CHATBOT IS LAUGHING RIGHT NOW", "CERTIFIED GAMER MOMENT™",
+  "INSERT COIN TO CONTINUE (COIN WILL STEAL YOUR POINTS)",
+  "ACHIEVEMENT UNLOCKED: DYING AGAIN", "THE DEVS DIDN'T PLAYTEST THIS. OR DID THEY?",
 ];
+let _deathMsgBag = [];
+function getNextDeathMessage() {
+  if (_deathMsgBag.length === 0) {
+    _deathMsgBag = [...DEATH_MESSAGES];
+    for (let i = _deathMsgBag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [_deathMsgBag[i], _deathMsgBag[j]] = [_deathMsgBag[j], _deathMsgBag[i]];
+    }
+  }
+  return _deathMsgBag.pop();
+}
 
 const DEATH_SUBS = [
   "Press SPACE to make the same mistake",
@@ -29,7 +46,21 @@ const DEATH_SUBS = [
   "Press SPACE. The spikes are waiting.",
   "Press SPACE (the definition of insanity)",
   "SPACE to respawn. Or just sit there. Same outcome.",
+  "Press SPACE. The game dares you.",
+  "SPACE = suffering. You know this.",
+  "Press SPACE and pretend you have a plan.",
 ];
+let _deathSubBag = [];
+function getNextDeathSub() {
+  if (_deathSubBag.length === 0) {
+    _deathSubBag = [...DEATH_SUBS];
+    for (let i = _deathSubBag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [_deathSubBag[i], _deathSubBag[j]] = [_deathSubBag[j], _deathSubBag[i]];
+    }
+  }
+  return _deathSubBag.pop();
+}
 
 /* ---------- PARTICLE ---------- */
 class Particle {
@@ -665,14 +696,17 @@ class Game {
     this.camera.shake = 12;
     this._spawnParticles(this.player.x + this.player.w/2, this.player.y + this.player.h/2, 20, '#ff4466', 'death');
     playSound('die');
-    const msg = DEATH_MESSAGES[this.deaths % DEATH_MESSAGES.length];
-    const sub = DEATH_SUBS[Math.floor(Math.random() * DEATH_SUBS.length)];
+    const msg = getNextDeathMessage();
+    const sub = getNextDeathSub();
     // Adaptive trolling
     let extraMsg = '';
-    if (this.deaths === 5) extraMsg = '\n🏷️ Difficulty: 👶 Easy Baby Mode (same difficulty)';
-    if (this.deaths === 10) extraMsg = '\n📊 You are in the bottom 0.01% of players.';
+    if (this.deaths === 5) extraMsg = '\n🏷️ Difficulty: 👶 Easy Baby Mode enabled! (same difficulty)';
+    if (this.deaths === 10) extraMsg = '\n📊 You are in the bottom 0.01% of 7.3M players.';
+    if (this.deaths === 15) extraMsg = '\n🎓 Death University has offered you a scholarship.';
     if (this.deaths === 20) extraMsg = '\n📞 Your ISP called. They want their bandwidth back.';
-    if (this.deaths === 30) extraMsg = '\n🤖 An AI could beat this. You can\'t. Noted.';
+    if (this.deaths === 25) extraMsg = '\n🫖 The teapot weeps for you. Error 418.';
+    if (this.deaths === 30) extraMsg = '\n🤖 Gemini AI could beat this. You can\'t. Noted.';
+    if (this.deaths === 40) extraMsg = '\n📱 Your phone sent a wellness check notification.';
     if (this.deaths === 50) extraMsg = '\n🏆 Congrats. You broke our death counter. Resetting in 3... 2... no.';
     document.getElementById('death-message').textContent = msg;
     document.getElementById('death-sub').textContent = sub + extraMsg;
@@ -717,15 +751,18 @@ class Game {
   _showVictory() {
     const mins = Math.floor(this.totalTime / 60);
     const secs = Math.floor(this.totalTime % 60);
+    const timeStr = `${mins}m ${secs}s`;
     // Save high score
     this._saveHighScore();
     const hs = this._getHighScores();
-    document.getElementById('victory-msg').textContent = `Congratulations! You wasted ${mins}m ${secs}s of your life.`;
+    document.getElementById('victory-msg').textContent = `Congratulations! You wasted ${timeStr} of your life.`;
     document.getElementById('victory-stats').innerHTML =
-      `Deaths: ${this.deaths}<br>Score: ${this.score}<br>Time Wasted: ${mins}m ${secs}s<br>Life Decisions Questioned: ∞` +
+      `Deaths: ${this.deaths}<br>Score: ${this.score}<br>Time Wasted: ${timeStr}<br>Life Decisions Questioned: ∞` +
       `<br><br><span style="color:#ffd600">HIGH SCORES</span><br>` +
       `Best Score: ${hs.bestScore}<br>Fewest Deaths: ${hs.fewestDeaths}<br>Fastest Time: ${hs.bestTime}<br>Games Completed: ${hs.gamesCompleted}`;
     document.getElementById('victory-screen').classList.remove('hidden');
+    // Trigger AI review
+    if (window.onGameEvent) window.onGameEvent('victory', { deaths: this.deaths, score: this.score, time: timeStr });
   }
 
   _saveHighScore() {
@@ -915,23 +952,45 @@ class Game {
       ctx.fillText('🫖', tx, ty + bob);
     });
 
-    // Signs — Clean and Elegant
+    // Signs — Clean banners with good contrast
     this.signs.forEach(s => {
       const sx = s.tx * TILE - this.camera.x, sy = s.ty * TILE - this.camera.y;
+      
       // Post
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.fillRect(sx + TILE/2 - 2, sy - 14, 4, TILE + 14);
-      // Board
-      ctx.font = '600 11px var(--font-primary, sans-serif)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.fillRect(sx + TILE/2 - 2, sy - 8, 4, TILE + 8);
+      
+      // Board background
+      ctx.font = '600 11px "JetBrains Mono", monospace';
       const tw = ctx.measureText(s.text).width;
-      const bw = Math.max(tw + 24, 60);
-      const bh = 26;
-      ctx.fillStyle = 'rgba(10, 10, 12, 0.9)';
-      ctx.fillRect(sx + TILE/2 - bw/2, sy - 36, bw, bh);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 1;
-      ctx.strokeRect(sx + TILE/2 - bw/2, sy - 36, bw, bh);
-      // Text
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(s.text, sx + TILE/2, sy - 23);
+      const bw = Math.max(tw + 32, 80);
+      const bh = 30;
+      const bx = sx + TILE/2 - bw/2;
+      const by = sy - 38;
+      
+      // Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(bx + 2, by + 2, bw, bh);
+      
+      // Board panel
+      ctx.fillStyle = 'rgba(8, 8, 12, 0.95)';
+      ctx.fillRect(bx, by, bw, bh);
+      
+      // Accent border (top line uses sign color)
+      ctx.fillStyle = s.color || 'rgba(255,255,255,0.5)';
+      ctx.fillRect(bx, by, bw, 3);
+      
+      // Subtle border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)'; ctx.lineWidth = 1;
+      ctx.strokeRect(bx, by, bw, bh);
+      
+      // Text with glow
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = s.color || 'rgba(255,255,255,0.3)';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(s.text, sx + TILE/2, by + bh/2 + 1);
+      ctx.shadowBlur = 0;
     });
 
     // Doors — Subtle Exit
