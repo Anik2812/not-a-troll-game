@@ -491,7 +491,7 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
 .mobile-controls { position: absolute; inset: 0; z-index: 50; pointer-events: none; display: none; justify-content: space-between; align-items: flex-end; padding: 20px; }
 .mobile-controls.hidden { display: none; }
 .dpad, .action-pad { pointer-events: auto; display: flex; gap: 10px; }
-.touch-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: #fff; font-size: 24px; font-weight: bold; border-radius: 50%; opacity: 0.5; user-select: none; -webkit-tap-highlight-color: transparent; }
+.touch-btn { display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: #fff; font-size: 24px; font-weight: bold; border-radius: 50%; opacity: 0.5; user-select: none; -webkit-tap-highlight-color: transparent; }
 .touch-btn:active { background: rgba(255,255,255,0.3); opacity: 1; transform: scale(0.95); }
 .action-pad .touch-btn { width: 80px; height: 80px; border-radius: 50%; font-size: 16px; background: rgba(255,0,60,0.2); border-color: rgba(255,0,60,0.5); }
 .action-pad .touch-btn:active { background: rgba(255,0,60,0.5); }
@@ -517,7 +517,7 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
   .touch-btn { opacity: 0.9; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
   .touch-btn, .action-pad .touch-btn, .dpad .touch-btn { pointer-events: auto; }
   
-  #chat-toggle { bottom: auto; top: 70px; right: 16px; }
+  #chat-toggle { bottom: 120px; top: auto; right: 16px; }
 
   /* Teapot page: ensure button visible */
   #teapot-screen { align-items: flex-start; padding-top: 20px; }
@@ -530,5 +530,5 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
   .teapot-body { font-size: 13px; margin-bottom: 12px; }
   .teapot-details { font-size: 10px; margin: 16px auto; }
 
-  .gemini-badge { bottom: 70px; right: 16px; font-size: 8px; }
+  .gemini-badge { bottom: 100px; right: 16px; font-size: 8px; }
 }

@@ -473,7 +473,8 @@ class Game {
     // Move & collide
     p.onGround = false;
     p.x += p.vx * dt; this._collideX(p);
-    p.y += p.vy * dt; this._collideY(p);
+    const oldY = p.y;
+    p.y += p.vy * dt; this._collideY(p, oldY);
     // Squash recovery
     p.scaleX += (1 - p.scaleX) * 0.12 * dt;
     p.scaleY += (1 - p.scaleY) * 0.12 * dt;
@@ -511,13 +512,13 @@ class Game {
     else if (p.vx < 0) { const c = Math.floor(p.x / TILE); for (let r = top; r <= bot; r++) if (this._isSolid(c, r)) { p.x = (c + 1) * TILE; p.vx = 0; return; } }
   }
 
-  _collideY(p) {
+  _collideY(p, oldY) {
     const left = Math.floor(p.x / TILE), right = Math.floor((p.x + p.w - 1) / TILE);
     if (p.vy > 0) {
       const r = Math.floor((p.y + p.h) / TILE);
       for (let c = left; c <= right; c++) {
         if (this._isSolid(c, r) || this._isPlatform(c, r)) {
-          if (this._isPlatform(c, r) && Math.floor((p.y + p.h - p.vy) / TILE) >= r) continue;
+          if (this._isPlatform(c, r) && oldY !== undefined && Math.floor((oldY + p.h - 0.1) / TILE) >= r) continue;
           p.y = r * TILE - p.h;
           if (p.vy > 4) { p.scaleX = 1.25; p.scaleY = 0.75; this._spawnParticles(p.x + p.w/2, p.y + p.h, 4, '#ffffff', 'land'); }
           p.vy = 0; p.onGround = true;
