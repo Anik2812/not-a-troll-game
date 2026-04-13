@@ -10,6 +10,7 @@
   let game = null;
 
   // ---- GEMINI API ----
+  // IMPORTANT: For production, this key MUST be restricted to your domain in Google Cloud Console!
   const GEMINI_API_KEY = 'AIzaSyADUuUf1ieht7myYV38guX1F6zioHAB2Rc';
   const GEMINI_MODEL = 'gemini-2.0-flash';
   let lastApiCall = 0;
@@ -465,14 +466,25 @@ BE ORIGINAL. SURPRISE ME.`;
       const score = game ? game.score : 0;
       const text = `🏆 I just beat "DEFINITELY NOT A TROLL GAME™" with ${deaths} deaths and a score of ${score}.\n\nThe coins robbed me. The spikes healed me. The doors killed me. The button ran away.\n\nI have trust issues now.\n\n#TrollGame #DEVAprilFools`;
       
-      if (navigator.clipboard) {
+      // Try modern clipboard API first, fallback to textarea method
+      function fallbackCopy(str) {
+        const ta = document.createElement('textarea');
+        ta.value = str;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showNotification('📋 Copied to clipboard! Now paste your shame everywhere.'); }
+        catch(e) { showNotification('📋 Copy failed. Even the clipboard is trolling you.'); }
+        document.body.removeChild(ta);
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
           showNotification('📋 Copied to clipboard! Now paste your shame everywhere.');
-        }).catch(() => {
-          showNotification('📋 Copy failed. Even the clipboard is trolling you.');
-        });
+        }).catch(() => fallbackCopy(text));
       } else {
-        showNotification('📋 Your browser doesn\'t support clipboard. Classic.');
+        fallbackCopy(text);
       }
     });
 
@@ -782,6 +794,7 @@ BE ORIGINAL. SURPRISE ME.`;
       const text = input.value.trim();
       if (!text) return;
       input.value = '';
+
       addUserMessage(text);
       showTyping();
       getChatResponse(text).then(response => {

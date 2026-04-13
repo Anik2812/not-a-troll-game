@@ -222,7 +222,11 @@ input, select { font-family: inherit; }
   color: #fff;
   flex-direction: column;
   text-align: center;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
 }
 #teapot-screen.active { z-index: 150; }
 
@@ -345,14 +349,14 @@ input, select { font-family: inherit; }
 /* ==============================
    CHAT & AI COMPANION
    ============================== */
-#chat-toggle { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 200; width: 56px; height: 56px; border-radius: 28px; background: rgba(10, 10, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0, 0, 1.2); backdrop-filter: blur(12px); color: rgba(255,255,255,0.7); }
-#chat-toggle:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.4); transform: translateX(-50%) scale(1.08); color: #fff; }
+#chat-toggle { position: fixed; bottom: 24px; right: 24px; z-index: 200; width: 56px; height: 56px; border-radius: 28px; background: rgba(10, 10, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0, 0, 1.2); backdrop-filter: blur(12px); color: rgba(255,255,255,0.7); }
+#chat-toggle:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.4); transform: scale(1.08); color: #fff; }
 #chat-toggle .chat-icon { font-size: 24px; font-weight: 600; font-family: var(--font-display); }
 
-#chat-popup { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 200; width: 360px; max-height: 70vh; background: rgba(10, 10, 12, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden; animation: chatSlideUp 0.3s cubic-bezier(0.2, 0, 0, 1); }
+#chat-popup { position: fixed; bottom: 90px; right: 24px; z-index: 200; width: 360px; max-height: 70vh; background: rgba(10, 10, 12, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden; animation: chatSlideUp 0.3s cubic-bezier(0.2, 0, 0, 1); }
 #chat-popup.hidden { display: none; }
 
-@keyframes chatSlideUp { from { opacity: 0; transform: translate(-50%, 40px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes chatSlideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
 .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.4); }
 .chat-header-left { display: flex; align-items: center; gap: 12px; }
@@ -456,7 +460,7 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
 /* ==============================
    GEMINI BADGE
    ============================== */
-.gemini-badge { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 190; font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.25); background: rgba(0,0,0,0.4); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); pointer-events: none; }
+.gemini-badge { position: fixed; bottom: 90px; right: 24px; z-index: 190; font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.25); background: rgba(0,0,0,0.4); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); pointer-events: none; }
 .gemini-badge.hidden { display: none; }
 .gemini-sparkle { color: #ffd600; }
 
@@ -495,13 +499,13 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
 /* ==============================
    RESPONSIVE SCALING
    ============================== */
-@media (max-width: 800px) {
-  .menu-content { margin: 30px auto; padding: 40px 24px; border-radius: 0; border-left: none; border-right: none; }
-  .game-title h1 { font-size: clamp(32px, 12vw, 48px); }
-  .menu-stats { gap: 20px; flex-direction: row; flex-wrap: wrap; justify-content: space-around; padding: 20px; }
+@media (max-width: 900px), (max-height: 500px) and (orientation: landscape) {
+  .menu-content { margin: 20px auto; padding: 32px 20px; border-radius: 0; border-left: none; border-right: none; }
+  .game-title h1 { font-size: clamp(28px, 10vw, 44px); }
+  .menu-stats { gap: 20px; flex-direction: row; flex-wrap: wrap; justify-content: space-around; padding: 16px; }
   .stat-value { font-size: 18px; }
   
-  #chat-popup { bottom: 90px; right: 16px; left: 16px; width: auto; max-width: none; transform: none; max-height: 50vh; }
+  #chat-popup { bottom: 90px; right: 16px; left: 16px; width: auto; max-width: none; max-height: 50vh; }
   .chat-messages { min-height: 150px; }
 
   .glass-panel { padding: 30px 20px; }
@@ -513,12 +517,18 @@ kbd { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
   .touch-btn { opacity: 0.9; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
   .touch-btn, .action-pad .touch-btn, .dpad .touch-btn { pointer-events: auto; }
   
-  #chat-toggle { bottom: 32px; transform: translateX(-50%) scale(0.9); }
+  #chat-toggle { bottom: 24px; right: 16px; }
 
-  .teapot-content { padding: 24px; }
-  .teapot-icon-lg { font-size: 70px; }
-  .teapot-content h1 { font-size: 80px; }
-  .teapot-poem { font-size: 14px; padding: 12px 16px; }
+  /* Teapot page: ensure button visible */
+  #teapot-screen { align-items: flex-start; padding-top: 20px; }
+  .teapot-content { padding: 24px; padding-bottom: 40px; }
+  .teapot-icon-lg { font-size: 60px; }
+  .teapot-content h1 { font-size: 64px; }
+  .teapot-content h2 { font-size: 20px; margin-bottom: 16px; }
+  .teapot-poem { font-size: 13px; padding: 12px 16px; }
+  .teapot-rfc { font-size: 8px; margin-bottom: 16px; }
+  .teapot-body { font-size: 13px; margin-bottom: 12px; }
+  .teapot-details { font-size: 10px; margin: 16px auto; }
 
-  .gemini-badge { bottom: 70px; font-size: 8px; }
+  .gemini-badge { bottom: 70px; right: 16px; font-size: 8px; }
 }

@@ -287,10 +287,18 @@ class Game {
 
   _resize() {
     const p = this.canvas.parentElement;
-    if (p) {
-      this.canvas.width = p.clientWidth || window.innerWidth;
-      this.canvas.height = p.clientHeight || window.innerHeight;
-    }
+    const w = (p ? p.clientWidth : window.innerWidth) || window.innerWidth;
+    const h = (p ? p.clientHeight : window.innerHeight) || window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width = w * dpr;
+    this.canvas.height = h * dpr;
+    this.canvas.style.width = w + 'px';
+    this.canvas.style.height = h + 'px';
+    this.dpr = dpr;
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Store logical dimensions for camera/collision
+    this._logicalWidth = w;
+    this._logicalHeight = h;
   }
 
   _setupInput() {
@@ -394,7 +402,6 @@ class Game {
 
   update(dt) {
     this.stateTimer += dt;
-    this.totalTime += dt / 60;
     // Floating texts
     this.floatingTexts = this.floatingTexts.filter(ft => { ft.y -= 0.8 * dt; ft.life -= 0.02 * dt; return ft.life > 0; });
     // Particles always update
@@ -421,6 +428,7 @@ class Game {
     }
 
     this.levelTime += dt / 60;
+    this.totalTime += dt / 60;
     if (this.keysJustPressed['Escape']) { this.pause(); return; }
 
     // General level updates
@@ -492,7 +500,9 @@ class Game {
   _updateCam(dt) {
     const lw = this.mapW * TILE;
     const lh = this.mapH * TILE;
-    this.camera.follow(this.player, this.canvas.width, this.canvas.height, lw, lh);
+    const cw = this._logicalWidth || this.canvas.width;
+    const ch = this._logicalHeight || this.canvas.height;
+    this.camera.follow(this.player, cw, ch, lw, lh);
   }
 
   _collideX(p) {
@@ -817,7 +827,8 @@ class Game {
   /* ---------- RENDER ---------- */
   render() {
     const ctx = this.ctx;
-    const W = this.canvas.width, H = this.canvas.height;
+    const W = this._logicalWidth || this.canvas.width;
+    const H = this._logicalHeight || this.canvas.height;
     if (!this.lvl) return;
 
     ctx.save();
